@@ -23,6 +23,7 @@ PASSWORD = os.environ.get("DB_PASSWORD")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
+
 if not all([PASSWORD, BOT_TOKEN, CHAT_ID]):
     print("Missing one of the required environment variables: DB_PASSWORD, BOT_TOKEN, CHAT_ID")
     sys.exit(1)
@@ -158,7 +159,6 @@ LEFT JOIN customers
 LEFT JOIN profiles
     ON customers.profile_id = profiles.id
 WHERE 1=1
-  WHERE 1=1
   AND DATE_FORMAT(DATE_SUB(bonus_logs.created_at, INTERVAL 6 HOUR), '%Y-%m') = DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m')
 """
 
@@ -210,11 +210,16 @@ def main():
             ("Sheba_Credit_Disbursement", QUERY_SHEBA_CREDIT)
         ]
 
+        # Run queries and prepare async tasks
         for prefix, query in reports:
             path = run_query_and_export(conn, query, prefix)
             tasks.append(send_to_telegram(path))
 
-        asyncio.run(asyncio.gather(*tasks))
+        # Correct way to run async tasks
+        async def send_all_reports():
+            await asyncio.gather(*tasks)
+
+        asyncio.run(send_all_reports())
 
     except mysql.connector.Error as e:
         print("MySQL error:", e)
