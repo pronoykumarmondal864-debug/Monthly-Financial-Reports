@@ -2,7 +2,7 @@ name: Monthly Finance Reports
 
 on:
   schedule:
-    - cron: '0 22 30 * *'  # Runs at 4:00 AM Dhaka time on the 1st day (22:00 UTC on the 30th)
+    - cron: '0 22 1 * *'  # 1st of every month at 04:00 AM Dhaka time
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
