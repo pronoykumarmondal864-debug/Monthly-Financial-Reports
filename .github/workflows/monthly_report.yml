@@ -1,0 +1,29 @@
+name: Monthly Finance Reports
+
+on:
+  schedule:
+    - cron: '0 22 30 * *'  # Runs at 4:00 AM Dhaka time on the 1st day (22:00 UTC on the 30th)
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  run-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Finance_Automation.py
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python Finance_Automation.py
